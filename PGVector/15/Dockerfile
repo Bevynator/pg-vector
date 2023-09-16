@@ -5,7 +5,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #    http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -14,15 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-FROM postgis/postgis:13-3.4
+FROM ankane/pgvector:v0.5.0
 
 # Do not split the description, otherwise we will see a blank space in the labels
 LABEL name="PostgreSQL + PostGIS Container Images" \
-      vendor="The CloudNativePG Contributors" \
-      version="${PG_VERSION}" \
-      release="7" \
-      summary="PostgreSQL + PostGIS Container images." \
-      description="This Docker image contains PostgreSQL, PostGIS and Barman Cloud based on Postgres 13-3.4."
+	vendor="The CloudNativePG Contributors" \
+	version="${PG_VERSION}" \
+	release="7" \
+	summary="PostgreSQL + PostGIS Container images." \
+	description="This Docker image contains PostgreSQL, PostGIS and Barman Cloud based on Postgres 15-3.4."
 
 COPY requirements.txt /
 
@@ -30,9 +30,9 @@ COPY requirements.txt /
 RUN set -xe; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		"postgresql-${PG_MAJOR}-pgaudit" \
-		"postgresql-${PG_MAJOR}-pg-failover-slots" \
-		"postgresql-${PG_MAJOR}-pgrouting" \
+	"postgresql-${PG_MAJOR}-pgaudit" \
+	"postgresql-${PG_MAJOR}-pg-failover-slots" \
+	"postgresql-${PG_MAJOR}-pgrouting" \
 	; \
 	rm -fr /tmp/* ; \
 	rm -rf /var/lib/apt/lists/*;
@@ -40,14 +40,13 @@ RUN set -xe; \
 # Install barman-cloud
 RUN set -xe; \
 	apt-get update; \
-	apt-get install -y --no-install-recommends \
-		python3-pip \
-		python3-psycopg2 \
-		python3-setuptools \
-	; \
-	pip3 install --upgrade pip; \
-# TODO: Remove --no-deps once https://github.com/pypa/pip/issues/9644 is solved
-	pip3 install --no-deps -r requirements.txt; \
+	apt-get install -y --no-install-recommends build-essential python3-pip python3-venv \
+	python3-psycopg2 python3-setuptools python3-dev libsnappy-dev; \
+	python3 -m venv /venv; \
+	. /venv/bin/activate; \
+	pip install --upgrade pip; \
+	pip install --no-deps -r requirements.txt; \
+	deactivate; \
 	rm -rf /var/lib/apt/lists/*;
 
 # Change the uid of postgres to 26
