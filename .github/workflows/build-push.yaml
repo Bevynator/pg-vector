@@ -34,7 +34,7 @@ jobs:
         with:
           context: ./PGVector/15/
           push: true
-          tags: ghcr.io/${{ env.REPO_NAME }}:${{ github.sha }}, ghcr.io/${{ env.REPO_NAME }}:latest
+          tags: ghcr.io/${{ env.REPO_NAME }}:${{ github.sha }}, ghcr.io/${{ env.REPO_NAME }}:15
 
       - name: Log out of GitHub Container Registry
         run: docker logout ghcr.io
