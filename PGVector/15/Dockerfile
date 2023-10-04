@@ -1,6 +1,5 @@
 FROM ankane/pgvector:v0.5.0
 
-# Do not split the description, otherwise we will see a blank space in the labels
 LABEL name="PostgreSQL + PG Vector Container Images" \
 	vendor="The CloudNativePG Contributors" \
 	version="${PG_VERSION}" \
@@ -21,12 +20,12 @@ RUN set -xe; \
 	rm -fr /tmp/* ; \
 	rm -rf /var/lib/apt/lists/*;
 
-# Install barman-cloud and its dependencies without venv
+# Override system pip restrictions and install barman-cloud
 RUN set -xe; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends build-essential python3-pip python3-psycopg2 python3-setuptools python3-dev libsnappy-dev; \
-	pip3 install --upgrade pip; \
-	pip3 install --no-deps -r requirements.txt; \
+	pip3 install --break-system-packages --upgrade pip; \
+	pip3 install --break-system-packages --no-deps -r requirements.txt; \
 	rm -rf /var/lib/apt/lists/*;
 
 # Change the uid of postgres to 26
