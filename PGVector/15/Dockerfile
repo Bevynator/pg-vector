@@ -1,28 +1,12 @@
-# vim:set ft=dockerfile:
-#
-# Copyright The CloudNativePG Contributors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
 FROM ankane/pgvector:v0.5.0
 
 # Do not split the description, otherwise we will see a blank space in the labels
-LABEL name="PostgreSQL + PostGIS Container Images" \
+LABEL name="PostgreSQL + PG Vector Container Images" \
 	vendor="The CloudNativePG Contributors" \
 	version="${PG_VERSION}" \
 	release="7" \
-	summary="PostgreSQL + PostGIS Container images." \
-	description="This Docker image contains PostgreSQL, PostGIS and Barman Cloud based on Postgres 15-3.4."
+	summary="PostgreSQL + PG Vector Container images." \
+	description="This Docker image contains PostgreSQL, PG Vector and Barman Cloud based on Postgres 15-3.4."
 
 COPY requirements.txt /
 
@@ -49,13 +33,18 @@ RUN set -xe; \
 	deactivate; \
 	rm -rf /var/lib/apt/lists/*;
 
-
+RUN apt-get update && \
+	apt-get install -y locales && \
+	sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+	dpkg-reconfigure --frontend=noninteractive locales && \
+	update-locale LANG=en_US.UTF-8
 
 ENV PATH="/venv/bin:${PATH}" \
+	LANGUAGE="en_US.UTF-8" \
 	LANG="en_US.UTF-8" \
 	LC_ALL="en_US.UTF-8" \
 	LC_CTYPE="en_US.UTF-8"
-# the LC were necessary because otherwise I got this after adding the venv/bin: https://stackoverflow.com/questions/41956994/initdb-bin-invalid-locale-settings-check-lang-and-lc-environment-variables
+# the language were necessary because otherwise I got this after adding the venv/bin: https://stackoverflow.com/questions/41956994/initdb-bin-invalid-locale-settings-check-lang-and-lc-environment-variables
 
 # Change the uid of postgres to 26
 RUN usermod -u 26 postgres
