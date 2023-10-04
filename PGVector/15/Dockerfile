@@ -50,8 +50,14 @@ RUN set -xe; \
 	rm -rf /var/lib/apt/lists/*;
 
 
+
+ENV PATH="/venv/bin:${PATH}" \
+	LANG="en_US.UTF-8" \
+	LC_ALL="en_US.UTF-8" \
+	LC_CTYPE="en_US.UTF-8"
+# the LC were necessary because otherwise I got this after adding the venv/bin: https://stackoverflow.com/questions/41956994/initdb-bin-invalid-locale-settings-check-lang-and-lc-environment-variables
+
 # Change the uid of postgres to 26
 RUN usermod -u 26 postgres
 USER 26
 
-ENV PATH="/venv/bin:${PATH}"
