@@ -49,6 +49,8 @@ RUN set -xe; \
 	deactivate; \
 	rm -rf /var/lib/apt/lists/*;
 
+ENV PATH="/venv/bin:$PATH"
+
 # Change the uid of postgres to 26
 RUN usermod -u 26 postgres
 USER 26
